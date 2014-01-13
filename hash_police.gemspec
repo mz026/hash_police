@@ -8,8 +8,8 @@ Gem::Specification.new do |spec|
   spec.version       = HashPolice::VERSION
   spec.authors       = ["Yang-Hsing Lin"]
   spec.email         = ["yanghsing.lin@gmail.com"]
-  spec.description   = %q{TODO: Write a gem description}
-  spec.summary       = %q{TODO: Write a gem summary}
+  spec.description   = %q{a gem to check whether given to hashes are of the same format}
+  spec.summary       = %q{a gem to check whether given to hashes are of the same format}
   spec.homepage      = ""
   spec.license       = "MIT"
 
