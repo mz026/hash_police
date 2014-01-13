@@ -12,11 +12,7 @@ module HashPolice
     def check target
       result = CheckResult.new(context_key)
       unless type_matched?(rule, target)
-        if context_key != "" && target.nil?
-          result.missing
-        else
-          result.differ_type(:expect => rule.class, :got => target.class)
-        end
+        result.differ_type(:expect => rule.class, :got => target.class)
         return result
       end
 
@@ -34,8 +30,12 @@ module HashPolice
           target = stringify_keys(target)
 
           rule.each do |rule_key, rule_val|
-            police = self.class.new(rule_val, "#{context_prefix}#{rule_key}")
-            result.concat(police.check(target[rule_key]))
+            if target.has_key?(rule_key)
+              police = self.class.new(rule_val, "#{context_prefix}#{rule_key}")
+              result.concat(police.check(target[rule_key]))
+            else
+              result.missing("#{context_prefix}#{rule_key}")
+            end
           end
         end
       end

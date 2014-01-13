@@ -69,15 +69,17 @@ describe HashPolice::Police do
           }
         }
       end
-      let(:nested_result1) { double(:nested_result1) }
-      let(:nested_result2) { double(:nested_result2) }
-      let(:nested_result3) { double(:nested_result3, :concat => nil) }
+      let(:result_name) { double(:result_name) }
+      let(:result_married) { double(:result_married) }
+      let(:result_nested) { double(:result_nested, :concat => nil) }
+      let(:result_key) { double(:result_key) }
 
       before(:each) do
         HashPolice::CheckResult.stub(:new).and_return(result, 
-                                                      nested_result1,
-                                                      nested_result2,
-                                                      nested_result3)
+                                                      result_name,
+                                                      result_married,
+                                                      result_nested,
+                                                      result_key)
       end
 
       it "passes if all keys are matched" do
@@ -91,8 +93,19 @@ describe HashPolice::Police do
       end
 
       it "failed if missing key" do
+        HashPolice::CheckResult.stub(:new).and_return(result, 
+                                                      result_married,
+                                                      result_nested,
+                                                      result_key)
         target.delete :name
-        nested_result1.should_receive(:missing).with()
+        result.should_receive(:missing).with("name")
+
+        police.check(target)
+      end
+
+      it "failed if expect string but nil" do
+        target[:nested] = { :key => nil }
+        result_key.should_receive(:differ_type).with(:expect => String, :got => NilClass)
 
         police.check(target)
       end
