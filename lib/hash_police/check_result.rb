@@ -28,4 +28,8 @@ class HashPolice::CheckResult
   def missing
     @errors << "`#{context_key}`: missing"
   end
+
+  def passed?
+    all_errors.empty?
+  end
 end

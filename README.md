@@ -50,9 +50,11 @@ invalid = {
 police = HashPolice::Police.new(rule)
 
 result = police.check(valid)
+result.passed? # => true
 result.error_messages # => ""
 
 result = police.check(invalid)
+result.passed? # => false
 result.error_messages # => "`name`: expect String, got Array; `favorites`: missing; `locations.1.name`: expect String, got Array; `locations.1.duration`: missing"
 
 ``

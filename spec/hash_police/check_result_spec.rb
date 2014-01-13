@@ -50,6 +50,18 @@ describe HashPolice::CheckResult do
     end
   end
 
+  describe "passed?" do
+    it "returns true if all_errors empty" do
+      result.passed?.should == true
+    end
+
+    it "returns false if all_errors not empty" do
+      result.missing
+
+      result.passed?.should == false
+    end
+  end
+
   describe "#concat(result)" do
     it "concat the child with its message" do
       pending
