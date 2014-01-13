@@ -8,7 +8,7 @@ describe HashPolice::Police do
     end
   end
 
-  describe "#check" do
+  describe "#check(target)" do
     let(:police) { HashPolice::Police.new(rule) }
     let(:rule) { "a string" }
     let(:target) { rule.clone }
@@ -59,7 +59,7 @@ describe HashPolice::Police do
       end
     end
 
-    context "when rule is a hash of scalar" do
+    context "when rule is a nested hash" do
       let(:rule) do
         {
           :name => "Jack",
