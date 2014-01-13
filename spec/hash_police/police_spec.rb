@@ -78,6 +78,12 @@ describe HashPolice::Police do
         police.check(target)
       end
 
+      it "passes if target with stringed key" do
+        target["name"] = target.delete :name
+
+        police.check(target)
+      end
+
       it "failed if missing key" do
         target.delete :name
         nested_result1.should_receive(:missing).with()

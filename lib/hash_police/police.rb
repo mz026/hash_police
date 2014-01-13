@@ -1,8 +1,10 @@
 require "hash_police/check_result"
+require 'hashie'
 module HashPolice
   class Police
     attr_reader :rule, :context_key
     def initialize rule, context_key = ""
+      # @rule = rule.extend(::Hashie::Extensions::StringifyKeys).stringify_keys!
       @rule = rule
       @passed = false
       @context_key = context_key
@@ -29,6 +31,9 @@ module HashPolice
         end
 
         if rule.kind_of?(Hash)
+          rule.extend(::Hashie::Extensions::StringifyKeys).stringify_keys!
+          target.extend(::Hashie::Extensions::StringifyKeys).stringify_keys!
+
           rule.each do |rule_key, rule_val|
             police = self.class.new(rule_val, "#{context_prefix}#{rule_key}")
             result.concat(police.check(target[rule_key]))
