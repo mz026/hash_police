@@ -1,18 +1,58 @@
 require "hash_police/check_result"
 
 describe HashPolice::CheckResult do
+  let(:context_key) { "the-key" }
+  let(:result) { HashPolice::CheckResult.new context_key }
+
   describe "::new(context_key)" do
-    pending
+    it "takes a context_key to init" do
+      result = HashPolice::CheckResult.new "the-key"
+    end
   end
+
+  describe "#error_messages" do
+    context "when without children" do
+      it "returns plain reason" do
+        result.differ_type(:expect => String, :got => Fixnum)
+        result.error_messages.should == "`the-key`: expect String, got Fixnum"
+      end
+    end
+
+    context "when with children" do
+      it "returns message with children's ones" do
+        children = [1,2,3].map do |i|
+          child = HashPolice::CheckResult.new("key-#{i}") 
+          result.concat(child)
+          child
+        end
+
+        children[1].differ_type(:expect => String, :got => Fixnum)
+        children[2].missing
+
+        result.error_messages.should == "`key-2`: expect String, got Fixnum; `key-3`: missing"
+      end
+    end
+
+  end
+
   describe "#missing" do
-    pending
+    it "adds missing message to errors" do
+      result.missing
+
+      result.error_messages.should == "`#{context_key}`: missing"
+    end
   end
 
   describe "#differ_type(:expect => Class1, :got => Class2)" do
-    peding
+    it "adds message to error_messages" do
+      result.differ_type(:expect => String, :got => Array)
+      result.error_messages.should == "`#{context_key}`: expect String, got Array"
+    end
   end
 
   describe "#concat(result)" do
-    
+    it "concat the child with its message" do
+      pending
+    end
   end
 end

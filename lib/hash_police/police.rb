@@ -20,16 +20,17 @@ module HashPolice
       end
 
       unless scalar?(rule)
+        context_prefix = context_key == "" ? "" : "#{context_key}."
         if rule.kind_of?(Array)
           target.each_with_index do |t, index|
-            police = self.class.new(rule.first, "#{context_key}.#{index}")
+            police = self.class.new(rule.first, "#{context_prefix}#{index}")
             result.concat(police.check(t))
           end
         end
 
         if rule.kind_of?(Hash)
           rule.each do |rule_key, rule_val|
-            police = self.class.new(rule_val, "#{context_key}.#{rule_key}")
+            police = self.class.new(rule_val, "#{context_prefix}#{rule_key}")
             result.concat(police.check(target[rule_key]))
           end
         end
