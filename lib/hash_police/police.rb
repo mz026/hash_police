@@ -1,10 +1,9 @@
 require "hash_police/check_result"
-require 'hashie'
+
 module HashPolice
   class Police
     attr_reader :rule, :context_key
     def initialize rule, context_key = ""
-      # @rule = rule.extend(::Hashie::Extensions::StringifyKeys).stringify_keys!
       @rule = rule
       @passed = false
       @context_key = context_key
@@ -31,8 +30,8 @@ module HashPolice
         end
 
         if rule.kind_of?(Hash)
-          rule.extend(::Hashie::Extensions::StringifyKeys).stringify_keys!
-          target.extend(::Hashie::Extensions::StringifyKeys).stringify_keys!
+          rule = stringify_keys(self.rule)
+          target = stringify_keys(target)
 
           rule.each do |rule_key, rule_val|
             police = self.class.new(rule_val, "#{context_prefix}#{rule_key}")
@@ -56,6 +55,10 @@ module HashPolice
 
     def scalar? val
       ! val.kind_of?(Array) && ! val.kind_of?(Hash)
+    end
+
+    def stringify_keys hash
+      JSON.parse(hash.to_json, :quirks_mode => true)
     end
 
   end

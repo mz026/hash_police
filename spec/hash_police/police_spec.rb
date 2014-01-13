@@ -1,4 +1,5 @@
 require "hash_police/police"
+require "json"
 
 describe HashPolice::Police do
   describe "::new(rule)" do
@@ -62,16 +63,21 @@ describe HashPolice::Police do
       let(:rule) do
         {
           :name => "Jack",
-          :married => true
+          :married => true,
+          :nested => {
+            :key => "val"
+          }
         }
       end
       let(:nested_result1) { double(:nested_result1) }
       let(:nested_result2) { double(:nested_result2) }
+      let(:nested_result3) { double(:nested_result3, :concat => nil) }
 
       before(:each) do
         HashPolice::CheckResult.stub(:new).and_return(result, 
                                                       nested_result1,
-                                                      nested_result2)
+                                                      nested_result2,
+                                                      nested_result3)
       end
 
       it "passes if all keys are matched" do

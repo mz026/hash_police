@@ -64,7 +64,8 @@ describe HashPolice::CheckResult do
 
   describe "#concat(result)" do
     it "concat the child with its message" do
-      pending
+      child = double
+      result.concat(child)
     end
   end
 end
