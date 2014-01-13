@@ -1,36 +1,55 @@
 require "hash_police/check_result"
 module HashPolice
   class Police
-    def initialize rule
+    attr_reader :rule, :context_key
+    def initialize rule, context_key = ""
       @rule = rule
       @passed = false
+      @context_key = context_key
     end
 
-    def check hash
-      result = CheckResult.new
-      @rule.each do |key, val|
-        unless hash.has_key?(key)
-          result.missing(key)
-          next
+    def check target
+      result = CheckResult.new(context_key)
+      unless type_matched?(rule, target)
+        if context_key != "" && target.nil?
+          result.missing
+        else
+          result.differ_type(:expect => rule.class, :got => target.class)
         end
-        unless type_matched?(val, hash[key])
-          result.differ_type(key, :expect => val.class, 
-                                  :got => hash[key].class) 
-          next
+        return result
+      end
+
+      unless scalar?(rule)
+        if rule.kind_of?(Array)
+          target.each_with_index do |t, index|
+            police = self.class.new(rule.first, "#{context_key}.#{index}")
+            result.concat(police.check(t))
+          end
         end
 
+        if rule.kind_of?(Hash)
+          rule.each do |rule_key, rule_val|
+            police = self.class.new(rule_val, "#{context_key}.#{rule_key}")
+            result.concat(police.check(target[rule_key]))
+          end
+        end
       end
+
       result
     end
 
     private
     def type_matched? rule, target
-      return true if is_bool(rule) && is_bool(target)
+      return true if bool?(rule) && bool?(target)
       rule.class == target.class
     end
 
-    def is_bool val
+    def bool? val
       !! val == val
+    end
+
+    def scalar? val
+      ! val.kind_of?(Array) && ! val.kind_of?(Hash)
     end
 
   end

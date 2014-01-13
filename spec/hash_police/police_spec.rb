@@ -8,46 +8,82 @@ describe HashPolice::Police do
   end
 
   describe "#check" do
-    let(:rule) do
-      {
-        :name => "jack",
-        :age => 30,
-        :married => true
-      }
-    end
-    let(:hash) { rule.clone }
     let(:police) { HashPolice::Police.new(rule) }
-    let(:result) { double(:result, :missing => nil ) }
+    let(:rule) { "a string" }
+    let(:target) { rule.clone }
+    let(:result) { double(:result, :concat => nil ) }
 
     before(:each) do
-      HashPolice::CheckResult.stub(:new => result)
+      HashPolice::CheckResult.stub(:new).and_return(result)
     end
 
-    it "passes if passed" do
-      HashPolice::CheckResult.stub(:new => double)
-      police.check(hash)
+    context "when rule is scalar value" do
+      it "passes if a string" do
+        HashPolice::CheckResult.stub(:new => double)
+        police.check "another string"
+      end
+
+      it "failed if type not match" do
+        result.should_receive(:differ_type).with(:expect => String, :got => Fixnum)
+        police.check 12345
+      end
     end
 
-    it "missing the key if hash missing key" do
-      hash.delete :name
-      result.should_receive(:missing).with(:name)
+    context "when rule is an array of scalar" do
+      let(:rule) { [ 1 ] }
+      let(:nested_result1) { double(:nested_result1) }
+      let(:nested_result2) { double(:nested_result2) }
 
-      police.check(hash)
+      before(:each) do
+        HashPolice::CheckResult.stub(:new).and_return(result, 
+                                                      nested_result1,
+                                                      nested_result2)
+      end
+
+      it "passes if target is an of the same type" do
+        police.check [ 1, 3, 4 ]
+      end
+
+      it "failed if target is not an array" do
+        result.should_receive(:differ_type).with(:expect => Array, :got => Fixnum)
+        police.check 12345
+      end
+
+      it "faild if not all elements are of the same type" do
+        result.should_receive(:concat).with(nested_result1)
+        result.should_receive(:concat).with(nested_result2)
+        nested_result2.should_receive(:differ_type).with(:expect => Fixnum, :got => String)
+
+        police.check [ 123, "string" ]
+      end
     end
 
-    it "failed check if hash value is of different class" do
-      hash[:name] = [ 'no a string' ]
-      result.should_receive(:differ_type).with(:name, :expect => String, 
-                                                      :got => Array)
+    context "when rule is a hash of scalar" do
+      let(:rule) do
+        {
+          :name => "Jack",
+          :married => true
+        }
+      end
+      let(:nested_result1) { double(:nested_result1) }
+      let(:nested_result2) { double(:nested_result2) }
 
-      police.check(hash)
-    end
+      before(:each) do
+        HashPolice::CheckResult.stub(:new).and_return(result, 
+                                                      nested_result1,
+                                                      nested_result2)
+      end
 
-    it "passes if different bool values" do
-      hash[:married] = false
-      result.should_not_receive(:differ_type)
+      it "passes if all keys are matched" do
+        police.check(target)
+      end
 
-      police.check(hash)
+      it "failed if missing key" do
+        target.delete :name
+        nested_result1.should_receive(:missing).with()
+
+        police.check(target)
+      end
     end
   end
 end
