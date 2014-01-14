@@ -12,7 +12,7 @@ class HashPolice::CheckResult
   end
 
   def error_messages
-    all_errors.join("; ")
+    all_errors.join("\n")
   end
 
   def all_errors

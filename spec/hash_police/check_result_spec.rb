@@ -29,7 +29,7 @@ describe HashPolice::CheckResult do
         children[1].differ_type(:expect => String, :got => Fixnum)
         children[2].missing
 
-        result.error_messages.should == "`key-2`: expect String, got Fixnum; `key-3`: missing"
+        result.error_messages.should == "`key-2`: expect String, got Fixnum\n`key-3`: missing"
       end
     end
 
