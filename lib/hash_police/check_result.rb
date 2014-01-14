@@ -25,8 +25,9 @@ class HashPolice::CheckResult
     @children << child_result
   end
 
-  def missing
-    @errors << "`#{context_key}`: missing"
+  def missing key = nil
+    error_key = key || context_key
+    @errors << "`#{error_key}`: missing"
   end
 
   def passed?

@@ -109,6 +109,13 @@ describe HashPolice::Police do
 
         police.check(target)
       end
+
+      it "failed if nested key missing" do
+        target[:nested] = {}
+        result_nested.should_receive(:missing).with("nested.key")
+
+        police.check(target)
+      end
     end
   end
 end

@@ -35,11 +35,17 @@ describe HashPolice::CheckResult do
 
   end
 
-  describe "#missing" do
+  describe "#missing(key = nil)" do
     it "adds missing message to errors" do
       result.missing
 
       result.error_messages.should == "`#{context_key}`: missing"
+    end
+
+    it "assigns missing key if given" do
+      result.missing("the-key")
+
+      result.error_messages.should == "`the-key`: missing"
     end
   end
 
