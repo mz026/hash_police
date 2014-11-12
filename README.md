@@ -57,6 +57,21 @@ result.passed? # => false
 result.error_messages #=> "`name`: expect String, got Array; `favorites`: missing; `locations.1.name`: expect String, got Array; `locations.1.duration`: missing"
 ```
 
+## RSpec matcher:
+
+`HashPolice` provides a RSpec matcher `have_the_same_hash_format_as` checking the formats of two hashes.
+
+```ruby
+  require 'hash_police/rspec_matcher'
+
+  it "should be able to use the matcher `have_the_same_hash_format_as`" do
+    expected = { 'str' => '', 'an_arr' => [ 1 ] }
+    to_be_checked = { 'str' => 'hola', :an_arr => [1,3,4] }
+
+    expect(to_be_checked).to have_the_same_hash_format_as(expected)
+  end
+```
+
 ## Contributing
 
 1. Fork it
