@@ -1,4 +1,5 @@
 require "hash_police/check_result"
+require 'json'
 
 module HashPolice
   class Police

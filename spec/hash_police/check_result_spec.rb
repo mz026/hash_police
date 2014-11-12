@@ -1,4 +1,4 @@
-require "hash_police/check_result"
+require "hash_police"
 
 describe HashPolice::CheckResult do
   let(:context_key) { "the-key" }

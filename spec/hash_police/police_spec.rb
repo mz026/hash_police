@@ -1,4 +1,4 @@
-require "hash_police/police"
+require "hash_police"
 require "json"
 
 describe HashPolice::Police do
