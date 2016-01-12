@@ -15,17 +15,17 @@ describe HashPolice::Police do
     let(:result) { double(:result, :concat => nil ) }
 
     before(:each) do
-      HashPolice::CheckResult.stub(:new).and_return(result)
+      allow(HashPolice::CheckResult).to receive(:new).and_return(result)
     end
 
     context "when rule is scalar value" do
       it "passes if a string" do
-        HashPolice::CheckResult.stub(:new => double)
+        allow(HashPolice::CheckResult).to receive(:new).and_return(double)
         police.check "another string"
       end
 
       it "failed if type not match" do
-        result.should_receive(:differ_type).with(:expect => String, :got => Fixnum)
+        expect(result).to receive(:differ_type).with(:expect => String, :got => Fixnum)
         police.check 12345
       end
     end
@@ -36,9 +36,9 @@ describe HashPolice::Police do
       let(:nested_result2) { double(:nested_result2) }
 
       before(:each) do
-        HashPolice::CheckResult.stub(:new).and_return(result, 
-                                                      nested_result1,
-                                                      nested_result2)
+        allow(HashPolice::CheckResult).to receive(:new).and_return(result,
+                                                                   nested_result1,
+                                                                   nested_result2)
       end
 
       it "passes if target is an of the same type" do
@@ -46,14 +46,14 @@ describe HashPolice::Police do
       end
 
       it "failed if target is not an array" do
-        result.should_receive(:differ_type).with(:expect => Array, :got => Fixnum)
+        expect(result).to receive(:differ_type).with(:expect => Array, :got => Fixnum)
         police.check 12345
       end
 
       it "faild if not all elements are of the same type" do
-        result.should_receive(:concat).with(nested_result1)
-        result.should_receive(:concat).with(nested_result2)
-        nested_result2.should_receive(:differ_type).with(:expect => Fixnum, :got => String)
+        expect(result).to receive(:concat).with(nested_result1)
+        expect(result).to receive(:concat).with(nested_result2)
+        expect(nested_result2).to receive(:differ_type).with(:expect => Fixnum, :got => String)
 
         police.check [ 123, "string" ]
       end
@@ -75,11 +75,11 @@ describe HashPolice::Police do
       let(:result_key) { double(:result_key) }
 
       before(:each) do
-        HashPolice::CheckResult.stub(:new).and_return(result, 
-                                                      result_name,
-                                                      result_married,
-                                                      result_nested,
-                                                      result_key)
+        allow(HashPolice::CheckResult).to receive(:new).and_return(result,
+                                                                   result_name,
+                                                                   result_married,
+                                                                   result_nested,
+                                                                   result_key)
       end
 
       it "passes if all keys are matched" do
@@ -93,26 +93,28 @@ describe HashPolice::Police do
       end
 
       it "failed if missing key" do
-        HashPolice::CheckResult.stub(:new).and_return(result, 
-                                                      result_married,
-                                                      result_nested,
-                                                      result_key)
+        allow(HashPolice::CheckResult).to receive(:new).and_return(result,
+                                                                   result_married,
+                                                                   result_nested,
+                                                                   result_key)
+
         target.delete :name
-        result.should_receive(:missing).with("name")
+        expect(result).to receive(:missing).with("name")
 
         police.check(target)
       end
 
       it "failed if expect string but nil" do
         target[:nested] = { :key => nil }
-        result_key.should_receive(:differ_type).with(:expect => String, :got => NilClass)
+        expect(result_key).to receive(:differ_type).with(:expect => String, :got => NilClass)
 
         police.check(target)
       end
 
       it "failed if nested key missing" do
         target[:nested] = {}
-        result_nested.should_receive(:missing).with("nested.key")
+
+        expect(result_nested).to receive(:missing).with("nested.key")
 
         police.check(target)
       end
