@@ -1,3 +1,6 @@
+[![Build Status](https://travis-ci.org/mz026/hash_police.svg?branch=master)](https://travis-ci.org/mz026/hash_police)
+[![Code Climate](https://codeclimate.com/github/mz026/hash_police/badges/gpa.svg)](https://codeclimate.com/github/mz026/hash_police)
+
 # HashPolice
 A gem to check whether given to hashes are of the same format
 
