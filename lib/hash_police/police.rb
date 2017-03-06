@@ -13,7 +13,11 @@ module HashPolice
     def check target
       result = CheckResult.new(context_key)
       unless type_matched?(rule, target)
-        result.differ_type(:expect => rule.class, :got => target.class)
+        if rule.kind_of?(Proc)
+          result.invalid_by_proc
+        else
+          result.differ_type(:expect => rule.class, :got => target.class)
+        end
         return result
       end
 
@@ -47,6 +51,9 @@ module HashPolice
     private
     def type_matched? rule, target
       return true if bool?(rule) && bool?(target)
+      if rule.kind_of?(Proc)
+        return !!rule.call(target)
+      end
       rule.class == target.class
     end
 
