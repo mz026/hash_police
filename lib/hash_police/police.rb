@@ -66,8 +66,10 @@ module HashPolice
     end
 
     def stringify_keys hash
-      JSON.parse(hash.to_json, :quirks_mode => true)
+      hash.reduce({}) do |memo,(k,v)|
+        memo[k.to_s] = v
+        memo
+      end
     end
-
   end
 end
