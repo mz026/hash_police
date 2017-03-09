@@ -30,6 +30,25 @@ describe HashPolice::Police do
       end
     end
 
+    context "when rule is scalar value and rule is kind of Proc" do
+      let(:rule) { lambda { |str| str.nil? || str.kind_of?(String) } }
+
+      it "passes if a string" do
+        allow(HashPolice::CheckResult).to receive(:new).and_return(double)
+        police.check('yo')
+      end
+
+      it "passes if a nil" do
+        allow(HashPolice::CheckResult).to receive(:new).and_return(double)
+        police.check(nil)
+      end
+
+      it "fails if lambda return false" do
+        expect(result).to receive(:invalid_by_proc)
+        police.check 12345
+      end
+    end
+
     context "when rule is an array of scalar" do
       let(:rule) { [ 1 ] }
       let(:nested_result1) { double(:nested_result1) }

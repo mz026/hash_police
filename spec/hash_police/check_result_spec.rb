@@ -33,7 +33,6 @@ describe HashPolice::CheckResult do
           .to eq( "`key-2`: expect String, got Fixnum\n`key-3`: missing")
       end
     end
-
   end
 
   describe "#missing(key = nil)" do
@@ -46,7 +45,7 @@ describe HashPolice::CheckResult do
     it "assigns missing key if given" do
       result.missing("the-key")
 
-      expect(result.error_messages).to eq( "`the-key`: missing")
+      expect(result.error_messages).to eq("`the-key`: missing")
     end
   end
 
@@ -73,6 +72,13 @@ describe HashPolice::CheckResult do
     it "concat the child with its message" do
       child = double
       result.concat(child)
+    end
+  end
+
+  describe "#invalid_by_proc" do
+    it "adds message to error_messages" do
+      result.invalid_by_proc
+      expect(result.error_messages).to eq("`#{context_key}` is invalid given Proc fucntion")
     end
   end
 end

@@ -12,6 +12,11 @@ module HashPolice
 
     def check target
       result = CheckResult.new(context_key)
+      if rule.kind_of?(Proc) && ! rule.call(target)
+        result.invalid_by_proc
+        return result
+      end
+
       unless type_matched?(rule, target)
         result.differ_type(:expect => rule.class, :got => target.class)
         return result
@@ -47,6 +52,9 @@ module HashPolice
     private
     def type_matched? rule, target
       return true if bool?(rule) && bool?(target)
+      if rule.kind_of?(Proc)
+        return !!rule.call(target)
+      end
       rule.class == target.class
     end
 
@@ -59,8 +67,10 @@ module HashPolice
     end
 
     def stringify_keys hash
-      JSON.parse(hash.to_json, :quirks_mode => true)
+      hash.reduce({}) do |memo,(k,v)|
+        memo[k.to_s] = v
+        memo
+      end
     end
-
   end
 end

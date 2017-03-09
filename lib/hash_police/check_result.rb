@@ -33,4 +33,8 @@ class HashPolice::CheckResult
   def passed?
     all_errors.empty?
   end
+
+  def invalid_by_proc
+    @errors << "`#{context_key}` is invalid given Proc fucntion"
+  end
 end
