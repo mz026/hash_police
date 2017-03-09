@@ -12,12 +12,13 @@ module HashPolice
 
     def check target
       result = CheckResult.new(context_key)
+      if rule.kind_of?(Proc) && ! rule.call(target)
+        result.invalid_by_proc
+        return result
+      end
+
       unless type_matched?(rule, target)
-        if rule.kind_of?(Proc)
-          result.invalid_by_proc
-        else
-          result.differ_type(:expect => rule.class, :got => target.class)
-        end
+        result.differ_type(:expect => rule.class, :got => target.class)
         return result
       end
 

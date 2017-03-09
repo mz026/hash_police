@@ -43,7 +43,7 @@ describe HashPolice::Police do
         police.check(nil)
       end
 
-      it "failed if lambda return false" do
+      it "fails if lambda return false" do
         expect(result).to receive(:invalid_by_proc)
         police.check 12345
       end
